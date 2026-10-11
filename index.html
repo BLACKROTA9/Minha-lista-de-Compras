@@ -1,1 +1,112 @@
-
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#167044">
+<title>Minha Lista de Compras</title>
+<style>
+:root{--green:#167044;--green2:#24965a;--bg:#f4f7f5;--card:#fff;--text:#17231c;--muted:#68756d;--line:#dce5de;--danger:#b42318}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,#125b38,#24965a);color:white;padding:24px 16px 28px}
+.wrap{max-width:850px;margin:auto}header .top{display:flex;gap:12px;align-items:center}.logo{font-size:30px;background:#ffffff25;border-radius:14px;padding:10px}h1{font-size:1.45rem;margin:0 0 4px}header p{margin:0;color:#e5f5eb;font-size:.95rem}
+main{max-width:850px;margin:-12px auto 40px;padding:0 12px}.panel,.item{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:0 2px 8px #153d2010}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#f1f7f3;border-radius:12px;padding:12px}.stat small{display:block;color:var(--muted);margin-bottom:4px}.stat strong{font-size:1.35rem;color:var(--green)}
+.progress{height:8px;background:#e1e9e3;border-radius:20px;overflow:hidden;margin-top:8px}.progress span{display:block;height:100%;width:0;background:var(--green2);transition:width .2s}
+h2{font-size:1.08rem;margin:0 0 12px}label{display:block;font-size:.85rem;font-weight:650;margin:0 0 5px;color:#3c4b41}
+input,select,button{font:inherit}input[type=text],input[type=number],select{width:100%;min-width:0;border:1px solid #cbd7ce;border-radius:10px;padding:11px;background:#fff;color:var(--text)}input:focus,select:focus{outline:2px solid #9bd5b1;border-color:var(--green)}
+.row{display:flex;gap:10px;align-items:end}.row>*{flex:1}.btn{border:0;border-radius:10px;padding:11px 14px;cursor:pointer;font-weight:700;background:var(--green);color:white}.btn.secondary{background:#e8f2eb;color:var(--green)}.btn.outline{background:white;border:1px solid var(--line);color:var(--text)}.btn.danger{background:#fff0ef;color:var(--danger)}.btn:active{transform:scale(.99)}
+.category{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.category label{display:flex;align-items:center;gap:7px;background:#f7faf8;border:1px solid var(--line);padding:8px 10px;border-radius:10px;font-weight:500;margin:0}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}.items{margin-top:12px}.item{padding:13px}.itemhead{display:flex;align-items:center;gap:10px}.itemhead input[type=checkbox]{width:20px;height:20px;accent-color:var(--green);flex-shrink:0}.itemhead .name{flex:1;font-weight:750;overflow-wrap:anywhere}.itemhead .name.done{text-decoration:line-through;color:var(--muted)}.itemhead .category-name{font-size:.76rem;color:var(--muted);margin-top:2px}.trash{border:0;background:transparent;color:var(--danger);font-size:1.1rem;padding:6px;cursor:pointer}.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.fields .full{grid-column:1/-1}.subtotal{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);margin-top:10px;padding-top:10px;color:var(--muted);font-size:.9rem}.subtotal strong{color:var(--green);font-size:1rem}.summaryline{display:flex;justify-content:space-between;padding:7px 0}.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px}.hint{font-size:.82rem;color:var(--muted);line-height:1.45}.empty{text-align:center;padding:24px;color:var(--muted)}
+@media(max-width:520px){.row{flex-direction:column;align-items:stretch}.controls{grid-template-columns:1fr}.actions{grid-template-columns:1fr}.fields{gap:8px}.panel{padding:13px}header{padding-top:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap top"><div class="logo">🛒</div><div><h1>Minha Lista de Compras</h1><p>Edite os itens e acompanhe suas compras.</p></div></div></header>
+<main>
+<section class="panel">
+  <div class="stats">
+    <div class="stat"><small>Itens comprados</small><strong id="bought">0 / 27</strong></div>
+    <div class="stat"><small>Valor estimado</small><strong id="total">R$ 0,00</strong></div>
+  </div>
+  <div style="margin-top:14px"><small style="color:var(--muted)">Progresso das compras</small><div class="progress"><span id="progress"></span></div></div>
+</section>
+<section class="panel">
+  <h2>Adicionar produto</h2>
+  <form id="addForm">
+    <div style="margin-bottom:10px"><label for="newName">Nome do produto</label><input id="newName" type="text" placeholder="Digite o nome do produto" required></div>
+    <label>Categoria</label>
+    <div class="category">
+      <label><input type="radio" name="newCat" value="Alimentos básicos" checked> Alimentos</label>
+      <label><input type="radio" name="newCat" value="Higiene pessoal"> Higiene pessoal</label>
+      <label><input type="radio" name="newCat" value="Limpeza"> Limpeza</label>
+    </div>
+    <button class="btn" type="submit" style="width:100%;margin-top:12px">＋ Adicionar à lista</button>
+  </form>
+</section>
+<section class="panel">
+  <h2>Produtos da lista</h2>
+  <div class="controls">
+    <div><label for="filterCat">Categoria</label><select id="filterCat"><option value="Todos">Todas as categorias</option><option value="Alimentos básicos">Alimentos</option><option value="Higiene pessoal">Higiene pessoal</option><option value="Limpeza">Limpeza</option></select></div>
+    <div><label for="filterStatus">Mostrar</label><select id="filterStatus"><option value="Todos">Todos</option><option value="Pendentes">Pendentes</option><option value="Comprados">Comprados</option></select></div>
+  </div>
+  <p class="hint">Toque no nome para editar. Preencha quantidade e preço unitário, se desejar. Os dados ficam salvos neste aparelho e navegador.</p>
+  <div id="items" class="items"></div>
+</section>
+<section class="panel">
+  <h2>Resumo</h2>
+  <div class="summaryline"><span>Produtos cadastrados</span><strong id="count">27</strong></div>
+  <div class="summaryline"><span>Faltam comprar</span><strong id="pending">27</strong></div>
+  <div class="summaryline"><span>Valor estimado total</span><strong id="total2">R$ 0,00</strong></div>
+  <div class="actions" style="margin-top:12px">
+    <button class="btn" id="copyAll">Copiar lista</button>
+    <button class="btn secondary" id="copyPending">Copiar somente os pendentes</button>
+    <button class="btn outline" id="resetChecks">Desmarcar todos os comprados</button>
+    <button class="btn outline" id="exportData">Exportar cópia dos dados</button>
+    <button class="btn danger" id="resetList" style="grid-column:1/-1">Restaurar lista original</button>
+  </div>
+  <p class="hint" style="margin-bottom:0">Para levar a lista para outro aparelho, use “Exportar cópia dos dados”. A lista original pode ser restaurada a qualquer momento.</p>
+</section>
+</main>
+<script>
+const original = [
+["Alimentos básicos","Arroz"],["Alimentos básicos","Feijão"],["Alimentos básicos","Macarrão"],["Alimentos básicos","Leite"],["Alimentos básicos","Ovos"],["Alimentos básicos","Carne"],["Alimentos básicos","Legumes"],["Alimentos básicos","Verduras"],["Alimentos básicos","Frutas"],["Alimentos básicos","Óleo de cozinha"],["Alimentos básicos","Açúcar"],["Alimentos básicos","Café"],["Alimentos básicos","Sal"],["Alimentos básicos","Farinha"],["Alimentos básicos","Outros alimentos variados"],["Higiene pessoal","Papel higiênico"],["Higiene pessoal","Sabonete"],["Higiene pessoal","Pasta de dente"],["Higiene pessoal","Shampoo"],["Higiene pessoal","Condicionador"],["Limpeza","Produtos de limpeza variados"],["Limpeza","Sabão em pó"],["Limpeza","Quiboa (água sanitária)"],["Limpeza","Detergente"],["Limpeza","Desinfetante"],["Limpeza","Esponja de lavar louça"],["Limpeza","Sacos de lixo"]
+].map((x,i)=>({id:i+1,cat:x[0],nome:x[1],qtd:"",preco:"",ok:false}));
+const KEY="minhaListaCompras_v1";
+let items;
+try{items=JSON.parse(localStorage.getItem(KEY))||structuredClone(original)}catch(e){items=original.map(x=>({...x}))}
+const $=id=>document.getElementById(id);
+const money=n=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}}
+function total(){return items.reduce((s,i)=>s+Math.max(0,Number(String(i.qtd).replace(",","."))||0)*Math.max(0,Number(String(i.preco).replace(",","."))||0),0)}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function render(){
+ const bought=items.filter(i=>i.ok).length,t=total();
+ $("bought").textContent=`${bought} / ${items.length}`;$("total").textContent=money(t);$("total2").textContent=money(t);
+ $("progress").style.width=(items.length?bought/items.length*100:0)+"%";$("count").textContent=items.length;$("pending").textContent=items.length-bought;
+ const cat=$("filterCat").value,status=$("filterStatus").value;
+ const shown=items.filter(i=>(cat==="Todos"||i.cat===cat)&&(status==="Todos"||(status==="Comprados"?i.ok:!i.ok)));
+ $("items").innerHTML=shown.length?shown.map(i=>`<article class="item" data-id="${i.id}">
+ <div class="itemhead"><input aria-label="Marcar ${esc(i.nome)} como comprado" type="checkbox" data-field="ok" ${i.ok?"checked":""}><div style="flex:1;min-width:0"><div class="name ${i.ok?"done":""}">${esc(i.nome)}</div><div class="category-name">${esc(i.cat)}</div></div><button class="trash" type="button" data-action="delete" aria-label="Excluir ${esc(i.nome)}" title="Excluir produto">🗑</button></div>
+ <div class="fields">
+ <div class="full"><label>Nome do produto</label><input type="text" data-field="nome" value="${esc(i.nome)}"></div>
+ <div><label>Quantidade</label><input type="number" min="0" step="any" data-field="qtd" value="${esc(i.qtd)}" placeholder="Ex.: 2"></div>
+ <div><label>Preço unitário (R$)</label><input type="number" min="0" step="0.01" data-field="preco" value="${esc(i.preco)}" placeholder="Ex.: 5,50"></div>
+ </div><div class="subtotal"><span>Subtotal</span><strong>${money(Math.max(0,Number(String(i.qtd).replace(",","."))||0)*Math.max(0,Number(String(i.preco).replace(",","."))||0))}</strong></div>
+ </article>`).join(""):`<div class="empty">Nenhum produto nesta seleção.</div>`;
+}
+$("addForm").addEventListener("submit",e=>{e.preventDefault();const nome=$("newName").value.trim();if(!nome)return;const cat=document.querySelector('input[name="newCat"]:checked').value;items.push({id:Date.now(),cat,nome,qtd:"",preco:"",ok:false});$("newName").value="";$("filterCat").value="Todos";$("filterStatus").value="Todos";save();render()});
+$("items").addEventListener("change",e=>{const el=e.target,card=el.closest("[data-id]");if(!card)return;const it=items.find(x=>String(x.id)===card.dataset.id);if(!it)return;const f=el.dataset.field;if(f==="ok")it.ok=el.checked;else if(f)it[f]=el.value;save();render()});
+$("items").addEventListener("click",e=>{const b=e.target.closest("[data-action=delete]");if(!b)return;const card=b.closest("[data-id]"),it=items.find(x=>String(x.id)===card.dataset.id);if(it&&confirm(`Excluir "${it.nome}" da lista?`)){items=items.filter(x=>x.id!==it.id);save();render()}});
+$("filterCat").addEventListener("change",render);$("filterStatus").addEventListener("change",render);
+function copy(text){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>alert("Lista copiada!")).catch(()=>fallbackCopy(text))}else fallbackCopy(text)}
+function fallbackCopy(text){const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");alert("Lista copiada!")}catch(e){prompt("Copie sua lista:",text)}ta.remove()}
+function plain(list){return "MINHA LISTA DE COMPRAS\\n\\n"+list.map(i=>`${i.ok?"[COMPRADO]":"[PENDENTE]"} ${i.nome} | Categoria: ${i.cat} | Quantidade: ${i.qtd||"-"} | Preço unitário: ${i.preco||"-"}`).join("\\n")+"\\n\\nTotal estimado: "+money(total())}
+$("copyAll").onclick=()=>copy(plain(items));$("copyPending").onclick=()=>copy("LISTA DE COMPRAS\\n"+items.filter(i=>!i.ok).map(i=>`- ${i.nome}${i.qtd?" — Quantidade: "+i.qtd:""}`).join("\\n"));
+$("resetChecks").onclick=()=>{items=items.map(i=>({...i,ok:false}));save();render()};
+$("resetList").onclick=()=>{if(confirm("Restaurar a lista original? Suas edições atuais serão substituídas.")){items=original.map(x=>({...x}));save();render()}};
+$("exportData").onclick=()=>{const blob=new Blob([JSON.stringify(items,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="minha-lista-de-compras-dados.json";a.click();URL.revokeObjectURL(url)};
+render();
+</script>
+</body>
+</html>
